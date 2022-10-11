@@ -7,7 +7,7 @@ from random import randint
 
 
 class Application:
-    FPS = 30
+    FPS = 25
 
     def __init__(self):
         pygame.init()
@@ -18,6 +18,16 @@ class Application:
 
         self.heights_left = [randint(1, 100) for _ in range(200)]
         self.heights_right = [randint(1, 100) for _ in range(200)]
+
+        reds = [randint(0, 255) for _ in range(len(self.heights_left))]
+        greens = [randint(0, 255) for _ in range(len(self.heights_left))]
+        blues = [randint(0, 255) for _ in range(len(self.heights_left))]
+        self.colors_left = [(reds[i], greens[i], blues[i]) for i in range(len(self.heights_left))]
+        self.colors_right = [(reds[i], greens[i], blues[i]) for i in range(len(self.heights_right))]
+
+        self.bubble_heights = []
+        self.insertion_heights = []
+
         self.bubble_heights = []
         self.insertion_heights = []
 
@@ -25,7 +35,7 @@ class Application:
         self.timer_bubble = 0
         self.timer_insertion = 0
 
-        #self.main_text = self.font.render(f'FPS: {self.FPS}', True, (0, 0, 0))
+        self.main_text = self.font.render(f'FPS: {self.FPS}', True, (0, 0, 0))
         self.ratio_text = self.font.render(f'Ratio: {self.ratio:.2f}', True, (0, 0, 0))
         self.left_text = self.font.render(f'Bubble Sort: {self.timer_bubble:.2f} seconds\nLength: {len(self.heights_left)}', True, (0, 0, 0))
         self.right_text = self.font.render(f'Insertion Sort: {self.timer_insertion:.2f} seconds\n Length: {len(self.heights_right)}', True, (0, 0, 0))
@@ -59,19 +69,22 @@ class Application:
             self.timer_insertion = pygame.time.get_ticks() / 1000
             self.right_text = self.font.render(f'Insertion Sort: {self.timer_insertion:.2f} seconds Length: {len(self.heights_right)}', True, (0, 0, 0))
 
-        self.main_text = self.font.render(f'FPS: {self.clock.get_fps():.2f}', True, (0, 0, 0))
+        self.main_text = self.font.render(f'FPS: {self.clock.get_fps()}', True, (0, 0, 0))
 
         self.bubble_heights = bubble_sort(self.heights_left)
         self.insertion_heights = insertion_sort(self.heights_right)
+
+        self.bubble_colors = bubble_sort(self.colors_left)
+        self.insertion_colors = insertion_sort(self.colors_right)
 
     def draw(self):
         self.screen.fill((255, 255, 255))
 
         for i, height in enumerate(self.bubble_heights):
-            pygame.draw.rect(self.screen, (0, 0, 0), (i * 2, 200 - height * 2, 2, height * 2))
+            pygame.draw.rect(self.screen, self.bubble_colors[i], (i * 2, 200 - height * 2, 2, height * 2))
 
         for i, height in enumerate(self.insertion_heights):
-            pygame.draw.rect(self.screen, (0, 0, 0), (i * 2 + len(self.bubble_heights) * 2, 200 - height * 2, 2, height * 2))
+            pygame.draw.rect(self.screen, self.insertion_colors[i], (i * 2 + len(self.bubble_heights) * 2, 200 - height * 2, 2, height * 2))
 
         self.screen.blit(self.left_text, (len(self.bubble_heights) // 2, 300))
         self.screen.blit(self.right_text, (len(self.insertion_heights) // 2 + len(self.bubble_heights) * 2, 300))
